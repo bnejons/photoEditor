@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\happy1.png" />
+    <None Remove="Images\happy2.png" />
+    <None Remove="Images\happy3.png" />
+    <None Remove="Images\happy4.png" />
+    <None Remove="Images\happy5.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Images\happy1.png" />
+    <EmbeddedResource Include="Images\happy2.png" />
+    <EmbeddedResource Include="Images\happy3.png" />
+    <EmbeddedResource Include="Images\happy4.png" />
+    <EmbeddedResource Include="Images\happy5.png" />
+  </ItemGroup>
+
+</Project>
