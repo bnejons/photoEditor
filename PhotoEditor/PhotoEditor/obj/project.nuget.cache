@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "fIuvwBlkJKTxHEWoQ6xtHK1eiwtt5wK7GcUaPMPNY8otjXTAMer+i+uxZn4O1pORJ3mTQxmwyTkXL+qZKP1u8Q==",
+  "dgSpecHash": "F48vDoThFAZ2N+/RA7yTywXEKMSjElQGS88HDbW1XwflXYeYX/BT9U0/sQ208DgcOlM/2/BXcgjLUZ3bxaHsAw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\18706\\source\\repos\\PhotoEditor\\PhotoEditor\\PhotoEditor.csproj",
+  "projectFilePath": "C:\\Users\\18706\\Documents\\GitHub\\photoEditor\\PhotoEditor\\PhotoEditor\\PhotoEditor.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
