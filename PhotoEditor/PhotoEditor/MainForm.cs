@@ -3,8 +3,8 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace PhotoEditor
 {
-    // Need to implement requirement 3 (menu bar - file explorer and change root folder)
-    // Need to implement EditForm and all those requirements
+    // Need to implement requirement 3 (menu bar - file explorer and change root folder, also about)
+    // Need to implement EditForm brightness track bar
     public partial class MainForm : Form
     {
         private string photoRootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
@@ -159,6 +159,7 @@ namespace PhotoEditor
             {
                 var editForm = new EditForm(item.Tag.ToString());
                 DialogResult result = editForm.ShowDialog();
+
                 //check result, if ok, save, not, dont save
             }
         }

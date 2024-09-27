@@ -34,3 +34,4 @@ C:\Users\18706\Documents\GitHub\photoEditor\PhotoEditor\PhotoEditor\obj\Debug\ne
 C:\Users\18706\Documents\GitHub\photoEditor\PhotoEditor\PhotoEditor\obj\Debug\net6.0-windows\PhotoEditor.pdb
 C:\Users\18706\Documents\GitHub\photoEditor\PhotoEditor\PhotoEditor\obj\Debug\net6.0-windows\PhotoEditor.genruntimeconfig.cache
 C:\Users\18706\Documents\GitHub\photoEditor\PhotoEditor\PhotoEditor\obj\Debug\net6.0-windows\ref\PhotoEditor.dll
+C:\Users\18706\Documents\GitHub\photoEditor\PhotoEditor\PhotoEditor\obj\Debug\net6.0-windows\PhotoEditor.Progress.resources
