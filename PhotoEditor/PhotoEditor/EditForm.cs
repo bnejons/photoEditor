@@ -48,7 +48,7 @@ namespace PhotoEditor
 
                         if (currentPixel % onePercent == 0)
                         {
-                            Invoke(() => // Takes too long??
+                            Invoke(() => 
                             {
                                 progress.UpdateProgress(currentPixel);
                             });
@@ -77,12 +77,12 @@ namespace PhotoEditor
                         int currentPixel = y * x;
 
                         var color = transformedBitmap.GetPixel(x, y);
-                        var newColor = Blend(color, transformColor);
+                        var newColor = BlendColor(color, transformColor);
                         transformedBitmap.SetPixel(x, y, newColor);
 
                         if (currentPixel % onePercent == 0)
                         {
-                            Invoke(() => // Takes too long??
+                            Invoke(() => 
                             {
                                 progress.UpdateProgress(currentPixel);
                             });
@@ -96,7 +96,7 @@ namespace PhotoEditor
         // I got following method from Timwi 
         // https://stackoverflow.com/questions/3722307/is-there-an-easy-way-to-blend-two-system-drawing-color-values
         // I tweaked it to match how it should work, but still does not look like the McCown example
-        public Color Blend(Color color, Color backColor)
+        private Color BlendColor(Color color, Color backColor)
         {
             byte r = (byte)((color.R + backColor.R) / 2);
             byte g = (byte)((color.G + backColor.G) / 2);
@@ -106,7 +106,70 @@ namespace PhotoEditor
 
         private void trackBar1_MouseUp(object sender, MouseEventArgs e)
         {
-            // Change brightness based on value
+            Transform(sender);
+        }
+
+        private async Task<int> ChangeBrightnessAsync(Bitmap transformedBitmap, Progress progress)
+        {
+            double onePercent = (transformedBitmap.Height * transformedBitmap.Width) / 100;
+            double amount = trackBar1.Value;
+            bool blackOrWhite = true; // White
+
+            if (amount < 50)
+            {
+                blackOrWhite = false;
+            }
+
+            await Task.Run(() =>
+            {
+                for (int y = 0; y < transformedBitmap.Height; y++)
+                {
+                    for (int x = 0; x < transformedBitmap.Width; x++)
+                    {
+                        int currentPixel = y * x;
+
+                        var color = transformedBitmap.GetPixel(x, y);
+
+                        Color newColor = BlendBright(blackOrWhite, color, amount);
+
+                        transformedBitmap.SetPixel(x, y, newColor);
+
+                        if (currentPixel % onePercent == 0)
+                        {
+                            Invoke(() => 
+                            {
+                                progress.UpdateProgress(currentPixel);
+                            });
+                        }
+                    }
+                }
+            });
+            
+            return 3;
+        }
+
+        private Color BlendBright(bool blackOrWhite, Color color, double amount)
+        {
+            if (blackOrWhite) // If brightening image
+            {
+                int r = (int)(color.R + (255 * (((amount - 50) * 2) / 100)));
+                if (r > 255) { r = 255; }
+                int b = (int)(color.B + (255 * (((amount - 50) * 2) / 100)));
+                if (b > 255) { b = 255; }
+                int g = (int)(color.G + (255 * (((amount - 50) * 2) / 100)));
+                if (g > 255) { g = 255; }
+                return Color.FromArgb(r, g, b);
+            }
+            else // If darkening image
+            {
+                int r = (int)(color.R - (255 * (((50 - amount) * 2) / 100)));
+                if (r < 0) { r = 0; }
+                int b = (int)(color.B - (255 * (((50 - amount) * 2) / 100)));
+                if (b < 0) { b = 0; }
+                int g = (int)(color.G - (255 * (((50 - amount) * 2) / 100)));
+                if (g < 0) { g = 0; }
+                return Color.FromArgb(r, g, b);
+            }
         }
 
 
@@ -128,14 +191,14 @@ namespace PhotoEditor
 
             ToggleControls();
 
-            if (sender == button1)
+            if (sender == button1) // Invert
             {
                 progress.Show();
                 await InvertColorsAsync(transformedBitmap, progress);
                 
             }
             
-            else if (sender == button2)
+            else if (sender == button2) // Change Color
             {
                 if (colorDialog1.ShowDialog() == DialogResult.OK)
                 {
@@ -144,7 +207,12 @@ namespace PhotoEditor
                 }
             }
 
-            // else if brightness method
+            else if (sender == trackBar1)
+            {
+                progress.Show();
+                await ChangeBrightnessAsync(transformedBitmap, progress);
+            }
+
             progress.Close();
             ToggleControls();
             // If not canceled, picture box = transformed 
