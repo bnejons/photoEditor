@@ -97,10 +97,10 @@ namespace PhotoEditor
             string path = treeView1.SelectedNode.Tag.ToString();
 
             var currentDirectoryInfo = new DirectoryInfo(path);
-            int returnValue = await ShowListViewAsync(currentDirectoryInfo);
+            await ShowListViewAsync(currentDirectoryInfo);
         }
 
-        private async Task<int> ShowListViewAsync(DirectoryInfo directoryInfo) 
+        private async Task ShowListViewAsync(DirectoryInfo directoryInfo) 
         {
             listView1.Clear();
 
@@ -144,7 +144,6 @@ namespace PhotoEditor
                 listViewProgressBar.Visible = false;
             });
 
-            return 3; //filler return value
         }
 
         private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -196,7 +195,7 @@ namespace PhotoEditor
             AddImages(directoryInfo);
 
             var currentDirectoryInfo = new DirectoryInfo(path);
-            int returnValue = await ShowListViewAsync(currentDirectoryInfo);
+            await ShowListViewAsync(currentDirectoryInfo);
         }
 
         private async void smallToolStripMenuItem_Click(object sender, EventArgs e)
@@ -213,7 +212,7 @@ namespace PhotoEditor
             AddImages(directoryInfo);
 
             var currentDirectoryInfo = new DirectoryInfo(path);
-            int returnValue = await ShowListViewAsync(currentDirectoryInfo);
+            await ShowListViewAsync(currentDirectoryInfo);
         }
 
         private async void largeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -230,7 +229,7 @@ namespace PhotoEditor
             AddImages(directoryInfo);
 
             var currentDirectoryInfo = new DirectoryInfo(path);
-            int returnValue = await ShowListViewAsync(currentDirectoryInfo);
+            await ShowListViewAsync(currentDirectoryInfo);
         }
     }
 }

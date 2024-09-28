@@ -12,7 +12,9 @@ namespace PhotoEditor
 {
     public partial class EditForm : Form
     {
-        string fileName;
+        public string fileName;
+        public CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        public Progress progress;
         public EditForm(string fileName)
         {
             InitializeComponent();
@@ -28,7 +30,7 @@ namespace PhotoEditor
         }
 
 
-        private async Task<int> InvertColorsAsync(Bitmap transformedBitmap, Progress progress)
+        private async Task InvertColorsAsync(Bitmap transformedBitmap, Progress progress)
         {
             double onePercent = (transformedBitmap.Height * transformedBitmap.Width) / 100;
             await Task.Run(() =>
@@ -56,7 +58,7 @@ namespace PhotoEditor
                     }
                 }
             });
-            return 3;
+            
         }
 
         private void button2_Click(object sender, EventArgs e) // Change Colors
@@ -65,7 +67,7 @@ namespace PhotoEditor
             Transform(sender);
         }
 
-        private async Task<int> ChangeColorsAsync(Bitmap transformedBitmap, Color transformColor, Progress progress) 
+        private async Task ChangeColorsAsync(Bitmap transformedBitmap, Color transformColor, Progress progress) 
         {
             double onePercent = (transformedBitmap.Height * transformedBitmap.Width) / 100;
             await Task.Run(() =>
@@ -90,7 +92,7 @@ namespace PhotoEditor
                     }
                 }
             });
-            return 3;
+            
         }
 
         // I got following method from Timwi 
@@ -109,7 +111,7 @@ namespace PhotoEditor
             Transform(sender);
         }
 
-        private async Task<int> ChangeBrightnessAsync(Bitmap transformedBitmap, Progress progress)
+        private async Task ChangeBrightnessAsync(Bitmap transformedBitmap, Progress progress)
         {
             double onePercent = (transformedBitmap.Height * transformedBitmap.Width) / 100;
             double amount = trackBar1.Value;
@@ -145,7 +147,7 @@ namespace PhotoEditor
                 }
             });
             
-            return 3;
+            
         }
 
         private Color BlendBright(bool blackOrWhite, Color color, double amount)
@@ -185,7 +187,7 @@ namespace PhotoEditor
 
         private async void Transform(object sender) // Performs all transformations
         {
-            // Register event handler for form closed?
+            // Register event handler for form closed? if cancel, return
             var transformedBitmap = new Bitmap(pictureBox1.Image);
             Progress progress = new Progress(transformedBitmap);
 
@@ -218,6 +220,8 @@ namespace PhotoEditor
             // If not canceled, picture box = transformed 
             pictureBox1.Image = transformedBitmap;
         }
+
+
         private void EditForm_Load(object sender, EventArgs e)
         {
             // Ignore
@@ -226,6 +230,12 @@ namespace PhotoEditor
         private void label1_Click(object sender, EventArgs e)
         {
             // Ignore
+        }
+
+        private void EditForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            cancellationTokenSource.Cancel();
+            if ()
         }
     }
 }
