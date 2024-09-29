@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.listView1 = new System.Windows.Forms.ListView();
@@ -43,8 +44,9 @@
             this.smallToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.largeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listViewProgressBar = new System.Windows.Forms.ProgressBar();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -67,6 +69,7 @@
             // 
             this.listView1.Location = new System.Drawing.Point(221, 68);
             this.listView1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(567, 369);
             this.listView1.TabIndex = 1;
@@ -109,6 +112,7 @@
             this.selectRootFolderToolStripMenuItem.Name = "selectRootFolderToolStripMenuItem";
             this.selectRootFolderToolStripMenuItem.Size = new System.Drawing.Size(214, 26);
             this.selectRootFolderToolStripMenuItem.Text = "&Select Root Folder";
+            this.selectRootFolderToolStripMenuItem.Click += new System.EventHandler(this.selectRootFolderToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -134,33 +138,38 @@
             // detailsToolStripMenuItem
             // 
             this.detailsToolStripMenuItem.Name = "detailsToolStripMenuItem";
-            this.detailsToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.detailsToolStripMenuItem.Size = new System.Drawing.Size(138, 26);
             this.detailsToolStripMenuItem.Text = "&Details";
             this.detailsToolStripMenuItem.Click += new System.EventHandler(this.detailsToolStripMenuItem_Click);
             // 
             // smallToolStripMenuItem
             // 
             this.smallToolStripMenuItem.Name = "smallToolStripMenuItem";
-            this.smallToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.smallToolStripMenuItem.Size = new System.Drawing.Size(138, 26);
             this.smallToolStripMenuItem.Text = "&Small";
             this.smallToolStripMenuItem.Click += new System.EventHandler(this.smallToolStripMenuItem_Click);
             // 
             // largeToolStripMenuItem
             // 
             this.largeToolStripMenuItem.Name = "largeToolStripMenuItem";
-            this.largeToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.largeToolStripMenuItem.Size = new System.Drawing.Size(138, 26);
             this.largeToolStripMenuItem.Text = "&Large";
             this.largeToolStripMenuItem.Click += new System.EventHandler(this.largeToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(55, 24);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
-            // openFileDialog1
+            // aboutToolStripMenuItem
             // 
-            this.openFileDialog1.FileName = "openFileDialog1";
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(133, 26);
+            this.aboutToolStripMenuItem.Text = "&About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // listViewProgressBar
             // 
@@ -179,9 +188,10 @@
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.treeView1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
-            this.Text = "Form1";
+            this.Text = "This is a Photo Editor";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -202,10 +212,11 @@
         private ToolStripMenuItem selectRootFolderToolStripMenuItem;
         private ToolStripSeparator toolStripMenuItem1;
         private ToolStripMenuItem exitToolStripMenuItem;
-        private OpenFileDialog openFileDialog1;
         private ProgressBar listViewProgressBar;
         private ToolStripMenuItem detailsToolStripMenuItem;
         private ToolStripMenuItem smallToolStripMenuItem;
         private ToolStripMenuItem largeToolStripMenuItem;
+        private FolderBrowserDialog folderBrowserDialog1;
+        private ToolStripMenuItem aboutToolStripMenuItem;
     }
 }

@@ -28,52 +28,58 @@
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new Label();
-            label2 = new Label();
-            label3 = new Label();
-            SuspendLayout();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.SuspendLayout();
             // 
             // label1
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(237, 63);
-            label1.Name = "label1";
-            label1.Size = new Size(300, 32);
-            label1.TabIndex = 0;
-            label1.Text = "This is a simple application";
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(146, 39);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(188, 20);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "This is a simple application";
             // 
             // label2
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(163, 95);
-            label2.Name = "label2";
-            label2.Size = new Size(468, 32);
-            label2.TabIndex = 1;
-            label2.Text = "that allows you to browse and edit photos.";
-            label2.Click += label2_Click;
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(100, 59);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(291, 20);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "that allows you to browse and edit photos.";
             // 
             // label3
             // 
-            label3.AutoSize = true;
-            label3.Location = new Point(265, 409);
-            label3.Name = "label3";
-            label3.Size = new Size(283, 32);
-            label3.TabIndex = 2;
-            label3.Text = "Ben Jones + Carter Jones";
-            label3.Click += label3_Click;
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(163, 256);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(172, 20);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "Ben Jones + Carter Jones";
             // 
             // AboutInfo
             // 
-            AutoScaleDimensions = new SizeF(13F, 32F);
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
-            Controls.Add(label3);
-            Controls.Add(label2);
-            Controls.Add(label1);
-            Name = "AboutInfo";
-            Text = "AboutInfo";
-            ResumeLayout(false);
-            PerformLayout();
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(492, 281);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Margin = new System.Windows.Forms.Padding(2);
+            this.MaximizeBox = false;
+            this.Name = "AboutInfo";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "About";
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
         #endregion

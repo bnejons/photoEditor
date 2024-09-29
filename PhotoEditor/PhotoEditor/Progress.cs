@@ -18,6 +18,9 @@ namespace PhotoEditor
 
         private double onePercent;
         private int totalPercent = 0;
+
+        public delegate void CancelEventHandler();
+        public event CancelEventHandler Cancel;
         public Progress(Bitmap bitmap)
         {
             InitializeComponent();
@@ -40,6 +43,11 @@ namespace PhotoEditor
                 ++totalPercent;
                 progressBar1.Value = totalPercent;
             }      
+        }
+
+        private void button1_Click(object sender, EventArgs e) // Cancel
+        {
+            Cancel();
         }
     }
 }

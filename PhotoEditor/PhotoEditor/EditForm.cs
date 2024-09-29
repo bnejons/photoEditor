@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PhotoEditor
 {
     public partial class EditForm : Form
     {
         public string fileName;
-        public CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         public Progress progress;
         public EditForm(string fileName)
         {
@@ -26,6 +28,8 @@ namespace PhotoEditor
 
         private void button1_Click(object sender, EventArgs e) // Invert Colors
         {
+            cancellationTokenSource = new CancellationTokenSource();
+
             Transform(sender);
         }
 
@@ -33,12 +37,17 @@ namespace PhotoEditor
         private async Task InvertColorsAsync(Bitmap transformedBitmap, Progress progress)
         {
             double onePercent = (transformedBitmap.Height * transformedBitmap.Width) / 100;
+            var token = cancellationTokenSource.Token;
             await Task.Run(() =>
             {
                 for (int y = 0; y < transformedBitmap.Height; y++)
                 {
                     for (int x = 0; x < transformedBitmap.Width; x++)
                     {
+                        if (token.IsCancellationRequested)
+                        {
+                            return;
+                        }
                         int currentPixel = y * x;
 
                         var color = transformedBitmap.GetPixel(x, y);
@@ -50,32 +59,45 @@ namespace PhotoEditor
 
                         if (currentPixel % onePercent == 0)
                         {
-                            Invoke(() => 
+                            try
                             {
-                                progress.UpdateProgress(currentPixel);
-                            });
+                                Invoke(() =>
+                                {
+                                    progress.UpdateProgress(currentPixel);
+                                });
+                            }
+                            catch (ObjectDisposedException)
+                            {
+                                
+                            }
                         }
                     }
                 }
-            });
+            }, token);
             
         }
 
         private void button2_Click(object sender, EventArgs e) // Change Colors
         {
-
+            cancellationTokenSource = new CancellationTokenSource();
             Transform(sender);
         }
 
         private async Task ChangeColorsAsync(Bitmap transformedBitmap, Color transformColor, Progress progress) 
         {
             double onePercent = (transformedBitmap.Height * transformedBitmap.Width) / 100;
+            var token = cancellationTokenSource.Token;
+
             await Task.Run(() =>
             {
                 for (int y = 0; y < transformedBitmap.Height; y++)
                 {
                     for (int x = 0; x < transformedBitmap.Width; x++)
                     {
+                        if (token.IsCancellationRequested)
+                        {
+                            return;
+                        }
                         int currentPixel = y * x;
 
                         var color = transformedBitmap.GetPixel(x, y);
@@ -84,10 +106,17 @@ namespace PhotoEditor
 
                         if (currentPixel % onePercent == 0)
                         {
-                            Invoke(() => 
+                            try
                             {
-                                progress.UpdateProgress(currentPixel);
-                            });
+                                Invoke(() =>
+                                {
+                                    progress.UpdateProgress(currentPixel);
+                                });
+                            }
+                            catch (ObjectDisposedException)
+                            {
+
+                            }
                         }
                     }
                 }
@@ -108,6 +137,7 @@ namespace PhotoEditor
 
         private void trackBar1_MouseUp(object sender, MouseEventArgs e)
         {
+            cancellationTokenSource = new CancellationTokenSource();
             Transform(sender);
         }
 
@@ -116,6 +146,7 @@ namespace PhotoEditor
             double onePercent = (transformedBitmap.Height * transformedBitmap.Width) / 100;
             double amount = trackBar1.Value;
             bool blackOrWhite = true; // White
+            var token = cancellationTokenSource.Token;
 
             if (amount < 50)
             {
@@ -128,6 +159,10 @@ namespace PhotoEditor
                 {
                     for (int x = 0; x < transformedBitmap.Width; x++)
                     {
+                        if (token.IsCancellationRequested)
+                        {
+                            return;
+                        }
                         int currentPixel = y * x;
 
                         var color = transformedBitmap.GetPixel(x, y);
@@ -138,10 +173,17 @@ namespace PhotoEditor
 
                         if (currentPixel % onePercent == 0)
                         {
-                            Invoke(() => 
+                            try
                             {
-                                progress.UpdateProgress(currentPixel);
-                            });
+                                Invoke(() =>
+                                {
+                                    progress.UpdateProgress(currentPixel);
+                                });
+                            }
+                            catch (ObjectDisposedException)
+                            {
+
+                            }
                         }
                     }
                 }
@@ -189,13 +231,18 @@ namespace PhotoEditor
         {
             // Register event handler for form closed? if cancel, return
             var transformedBitmap = new Bitmap(pictureBox1.Image);
-            Progress progress = new Progress(transformedBitmap);
+            progress = new Progress(transformedBitmap);
+            progress.Cancel += ProgressForm_Close;
 
             ToggleControls();
 
             if (sender == button1) // Invert
             {
-                progress.Show();
+                // I learned how to have the start position at the parent of a modeless from Rotem in this link
+                // https://stackoverflow.com/questions/8566582/how-to-centerparent-a-non-modal-form
+                progress.StartPosition = FormStartPosition.Manual;
+                progress.Location = new Point(this.Location.X + (this.Width - progress.Width) / 2, this.Location.Y + (this.Height - progress.Height) / 2);
+                progress.Show(this);
                 await InvertColorsAsync(transformedBitmap, progress);
                 
             }
@@ -204,21 +251,32 @@ namespace PhotoEditor
             {
                 if (colorDialog1.ShowDialog() == DialogResult.OK)
                 {
-                    progress.Show();
+                    progress.StartPosition = FormStartPosition.Manual;
+                    progress.Location = new Point(this.Location.X + (this.Width - progress.Width) / 2, this.Location.Y + (this.Height - progress.Height) / 2);
+                    progress.Show(this);
                     await ChangeColorsAsync(transformedBitmap, colorDialog1.Color, progress);
                 }
             }
 
             else if (sender == trackBar1)
             {
-                progress.Show();
+                progress.StartPosition = FormStartPosition.Manual;
+                progress.Location = new Point(this.Location.X + (this.Width - progress.Width) / 2, this.Location.Y + (this.Height - progress.Height) / 2);
+                progress.Show(this);
                 await ChangeBrightnessAsync(transformedBitmap, progress);
             }
 
             progress.Close();
             ToggleControls();
-            // If not canceled, picture box = transformed 
-            pictureBox1.Image = transformedBitmap;
+
+            if (!cancellationTokenSource.IsCancellationRequested)
+            {
+                pictureBox1.Image = transformedBitmap;
+            }
+            else
+            {
+                trackBar1.Value = 50;
+            }
         }
 
 
@@ -235,7 +293,31 @@ namespace PhotoEditor
         private void EditForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             cancellationTokenSource.Cancel();
-            if ()
+
+        }
+
+        private void ProgressForm_Close()
+        {
+            cancellationTokenSource.Cancel();
+        }
+
+        private void button3_Click(object sender, EventArgs e) // Close form
+        {
+            Close();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                pictureBox1.Image.Save("myphoto.jpg", ImageFormat.Jpeg);
+                string currentDirectory = Environment.CurrentDirectory;
+                MessageBox.Show("Photo was saved at " + currentDirectory, "Saved Photo Location", MessageBoxButtons.OK, MessageBoxIcon.Information); ;
+            }
+           catch (Exception)
+            {
+                MessageBox.Show("Error occured when saving", "hol up bro");
+            }
         }
     }
 }

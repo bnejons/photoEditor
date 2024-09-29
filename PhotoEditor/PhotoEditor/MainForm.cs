@@ -1,3 +1,6 @@
+using Microsoft.VisualBasic.ApplicationServices;
+using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
@@ -38,11 +41,18 @@ namespace PhotoEditor
         {
             var directoryNode = new TreeNode(directoryInfo.Name);
 
-            foreach (var directory in directoryInfo.GetDirectories()) //recursive, tags each Node with directory name, adds to directoryNode
+            try
             {
-                TreeNode node = CreateDirectoryNode(directory);
-                node.Tag = directory.FullName;
-                directoryNode.Nodes.Add(node);
+                foreach (var directory in directoryInfo.GetDirectories()) //recursive, tags each Node with directory name, adds to directoryNode
+                {
+                    TreeNode node = CreateDirectoryNode(directory);
+                    node.Tag = directory.FullName;
+                    directoryNode.Nodes.Add(node);
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+
             }
 
             return directoryNode;
@@ -50,26 +60,47 @@ namespace PhotoEditor
 
         private void AddImages(DirectoryInfo directoryInfo)
         {
-            foreach (var directory in directoryInfo.GetDirectories())
+            try
             {
-                AddImages(directory);
+                foreach (var directory in directoryInfo.GetDirectories())
+                {
+                    AddImages(directory);
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+
             }
 
-            foreach (var file in directoryInfo.GetFiles()) //adds each photo to imageList
+            try
             {
-                if (isImageFile(file))
+                foreach (var file in directoryInfo.GetFiles()) //adds each photo to imageList
                 {
-                    //uses file.FullName as a key to access later in listView
+                    if (isImageFile(file))
+                    {
+                        //uses file.FullName as a key to access later in listView
 
-                    byte[] bytes = System.IO.File.ReadAllBytes(file.FullName);
-                    MemoryStream ms = new MemoryStream(bytes);
-                    Image img = Image.FromStream(ms);
+                        byte[] bytes = System.IO.File.ReadAllBytes(file.FullName);
+                        MemoryStream ms = new MemoryStream(bytes);
+                        try
+                        {
+                            Image img = Image.FromStream(ms);
+                            //I used this link to learn getting thumbnail images
+                            //https://learn.microsoft.com/en-us/dotnet/api/system.drawing.image.getthumbnailimage?view=net-8.0
+                            Image.GetThumbnailImageAbort callback = new Image.GetThumbnailImageAbort(ThumbnailCallback);
+                            imageList1.Images.Add(file.FullName, img.GetThumbnailImage(1000, 1000, callback, IntPtr.Zero));
+                        }
+                        catch (ArgumentException)
+                        {
 
-                    //I used this link to learn getting thumbnail images
-                    //https://learn.microsoft.com/en-us/dotnet/api/system.drawing.image.getthumbnailimage?view=net-8.0
-                    Image.GetThumbnailImageAbort callback = new Image.GetThumbnailImageAbort(ThumbnailCallback);
-                    imageList1.Images.Add(file.FullName, img.GetThumbnailImage(1000, 1000, callback, IntPtr.Zero));
+                        }
+
+                    }
                 }
+            }
+            catch (UnauthorizedAccessException)
+            {
+
             }
         }
 
@@ -111,27 +142,34 @@ namespace PhotoEditor
                     listViewProgressBar.Visible = true;
                 });
 
-                foreach (var file in directoryInfo.GetFiles()) //adds to imageList
+                try
                 {
-                    if (isImageFile(file))
+                    foreach (var file in directoryInfo.GetFiles()) //adds to imageList
                     {
-                        ListViewItem item1 = new ListViewItem(file.Name);    // Text and image index    imageList1.Images.IndexOfKey(file.FullName)
-                        item1.SubItems.Add(file.LastWriteTime.ToString());      // Column 3
-                        item1.SubItems.Add(file.Length.ToString());             // Column 4
-                        item1.Tag = file.FullName;                              //sending to editForm
-
-                        /*I used
-    https://stackoverflow.com/questions/27826992/how-to-index-image-list-by-name-instead-of-position
-                        -DWZA April 26, 2016
-                        to figure out how to locate index of image based on key*/
-                        item1.ImageIndex = imageList1.Images.IndexOfKey(item1.Tag.ToString());
-
-                        Invoke(() =>
+                        if (isImageFile(file))
                         {
-                            // Add the items to the list view
-                            listView1.Items.Add(item1);
-                        });
+                            ListViewItem item1 = new ListViewItem(file.Name);    // Text and image index    imageList1.Images.IndexOfKey(file.FullName)
+                            item1.SubItems.Add(file.LastWriteTime.ToString());      // Column 3
+                            item1.SubItems.Add(file.Length.ToString());             // Column 4
+                            item1.Tag = file.FullName;                              //sending to editForm
+
+                            /*I used
+        https://stackoverflow.com/questions/27826992/how-to-index-image-list-by-name-instead-of-position
+                            -DWZA April 26, 2016
+                            to figure out how to locate index of image based on key*/
+                            item1.ImageIndex = imageList1.Images.IndexOfKey(item1.Tag.ToString());
+
+                            Invoke(() =>
+                            {
+                                // Add the items to the list view
+                                listView1.Items.Add(item1);
+                            });
+                        }
                     }
+                }
+                catch (UnauthorizedAccessException)
+                {
+
                 }
             });
             // Create columns (Width of -2 indicates auto-size)
@@ -172,9 +210,35 @@ namespace PhotoEditor
             }
             else
             {
-                // open file explorer with listView selected item 
+                // I used Jamie Penney at this link to know how to open file explorer
+                // https://stackoverflow.com/questions/1746079/how-can-i-open-windows-explorer-to-a-certain-directory-from-within-a-wpf-app
+                // I used Samuel Yang at this link to know how to have a selected file
+                // https://stackoverflow.com/questions/334630/opening-a-folder-in-explorer-and-selecting-a-file
 
+                foreach (ListViewItem item in listView1.SelectedItems)
+                {
+                    string path = "/select,\"" + item.Tag.ToString() + "\"";
+                    Process.Start("explorer.exe", path);
+                }
             }
+        }
+
+        private async void selectRootFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            folderBrowserDialog1 = new FolderBrowserDialog();
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            {
+                var path = folderBrowserDialog1.SelectedPath;
+                ListDirectory(path);
+                var currentDirectoryInfo = new DirectoryInfo(path);
+                await ShowListViewAsync(currentDirectoryInfo);
+            }
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutInfo aboutInfo = new AboutInfo();
+            aboutInfo.ShowDialog();
         }
 
         // Changing the listView icon size from Shiroy
@@ -231,5 +295,6 @@ namespace PhotoEditor
             var currentDirectoryInfo = new DirectoryInfo(path);
             await ShowListViewAsync(currentDirectoryInfo);
         }
+
     }
 }
