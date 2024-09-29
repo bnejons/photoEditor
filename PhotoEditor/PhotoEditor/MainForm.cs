@@ -241,6 +241,11 @@ namespace PhotoEditor
             aboutInfo.ShowDialog();
         }
 
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
         // Changing the listView icon size from Shiroy
         //https://stackoverflow.com/questions/30035814/c-sharp-listview-image-icon-size
 
